@@ -32,20 +32,10 @@ app.use(fileUpload({
   debug: false
 }));
 
-
-
-app.get('/token/:token', (req, res) => {
-
-  const { token } = req.params;
-
-  if (token == 'zgbfktthfvjv2956') {
-    res.sendFile('index.html', {
-      root: __dirname
-    });
-  } else {
-    res.status(403).send('<h1>Acesso proibido</h1>')
-  }
-
+app.get('/', (req, res) => {
+  res.sendFile('index.html', {
+    root: __dirname
+  });
 });
 
 const client = new Client({
