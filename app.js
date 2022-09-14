@@ -32,10 +32,20 @@ app.use(fileUpload({
   debug: false
 }));
 
-app.get('/', (req, res) => {
-  res.sendFile('index.html', {
-    root: __dirname
-  });
+
+
+app.get('/token/:token', (req, res) => {
+
+  const { token } = req.params;
+
+  if (token == 'zgbfktthfvjv2956') {
+    res.sendFile('index.html', {
+      root: __dirname
+    });
+  } else {
+    res.status(403).send('<h1>Acesso proibido</h1>')
+  }
+
 });
 
 const client = new Client({
@@ -98,7 +108,7 @@ client.on('message', msg => {
 
   //       // Get the file extension by mime-type
   //       const extension = mime.extension(media.mimetype);
-        
+
   //       // Filename: change as you want! 
   //       // I will use the time for this example
   //       // Why not use media.filename? Because the value is not certain exists
@@ -121,7 +131,7 @@ client.on('message', msg => {
 client.initialize();
 
 // Socket IO
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
   socket.emit('message', 'Connecting...');
 
   client.on('qr', (qr) => {
@@ -143,7 +153,7 @@ io.on('connection', function(socket) {
     console.log('AUTHENTICATED');
   });
 
-  client.on('auth_failure', function(session) {
+  client.on('auth_failure', function (session) {
     socket.emit('message', 'Auth failure, restarting...');
   });
 
@@ -155,7 +165,7 @@ io.on('connection', function(socket) {
 });
 
 
-const checkRegisteredNumber = async function(number) {
+const checkRegisteredNumber = async function (number) {
   const isRegistered = await client.isRegisteredUser(number);
   return isRegistered;
 }
@@ -237,9 +247,9 @@ app.post('/send-media', async (req, res) => {
   });
 });
 
-const findGroupByName = async function(name) {
+const findGroupByName = async function (name) {
   const group = await client.getChats().then(chats => {
-    return chats.find(chat => 
+    return chats.find(chat =>
       chat.isGroup && chat.name.toLowerCase() == name.toLowerCase()
     );
   });
@@ -328,7 +338,7 @@ app.post('/clear-message', [
   }
 
   const chat = await client.getChatById(number);
-  
+
   chat.clearMessages().then(status => {
     res.status(200).json({
       status: true,
@@ -342,6 +352,6 @@ app.post('/clear-message', [
   })
 });
 
-server.listen(port, function() {
+server.listen(port, function () {
   console.log('App running on *: ' + port);
 });
